@@ -3,6 +3,7 @@ package com.flam.androidflamslam;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -10,14 +11,12 @@ import android.widget.TextView;
 
 import com.flam.androidflamslam.databinding.ActivityMainBinding;
 
+import java.util.Objects;
+
 public class MainActivity extends Activity {
 
-    // Used to load the 'androidflamslam' library on application startup.
-    static {
-        System.loadLibrary("androidflamslam");
-    }
+    MainSurfaceView glSurfaceView;
 
-    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +33,22 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getActionBar().hide();
+        Objects.requireNonNull(getActionBar()).hide();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        float refreshRate = getWindowManager()
+                .getDefaultDisplay()
+                .getRefreshRate();
+
+        Log.d("Display", "Refresh Rate: " + refreshRate);
+
+        com.flam.androidflamslam.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Example of a call to a native method
-        TextView tv = binding.sampleText;
-        tv.setText(stringFromJNI());
+        glSurfaceView = findViewById(R.id.gl_surface_view);
+        TextView fpsText = findViewById(R.id.fps_text);
+
+        glSurfaceView.setFpsTextView(fpsText);
     }
 
-    /**
-     * A native method that is implemented by the 'androidflamslam' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
 }

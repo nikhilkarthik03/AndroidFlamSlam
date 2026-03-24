@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/sokol"]
+	path = app/src/main/cpp/sokol
+	url = git@github.com:homingos/sokol.git
